@@ -21,6 +21,8 @@ class calcController {
 			this.setDisplayDateTime();
 		}, 1000);
 
+		this.setLastNumberDisplay();
+
 	}
 
 	addEventListenerAll(element, events, fn) {
@@ -31,11 +33,12 @@ class calcController {
 
 	clearAll() {
 		this._operation = [];
-		this.displayCalc = '';
+		this.setLastNumberDisplay();
 	}
 
 	clearEntry() {
 		this._operation.pop();
+		this.setLastNumberDisplay();
 	}
 
 	getLastOperation() {
@@ -51,9 +54,21 @@ class calcController {
 	}
 
 	calc() {
-		let last = this._operation.pop();
+		let last = '';
+
+		if (this._operation.length > 3) {
+			last = this._operation.pop();
+		}
 		let result = eval(this._operation.join(""));
-		this._operation = [result, last];
+
+		if(last == '%') {
+			result /= 100;
+			this._operation = [result];
+		} else {
+			this._operation = [result];
+			if (last) this._operation.push(last);
+		}
+
 		this.setLastNumberDisplay();
 	}
 
@@ -76,6 +91,7 @@ class calcController {
 				break;
 			}			
 		}
+		if (!lastNumber) lastNumber = 0;
 		this.displayCalc = lastNumber;
 	}
 
@@ -120,7 +136,7 @@ class calcController {
 				break;
 		
 			case 'igual':
-				this.addOperation("=");
+				this.calc();
 				break;
 		
 			case 'soma':
